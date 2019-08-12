@@ -1,5 +1,12 @@
-function rba_linear_problem_symbolic_display(LP_symbolic,style)
+function rba_linear_problem_symbolic_display(rba_problem_symbolic,style)
 
+% rba_linear_problem_symbolic_display(rba_problem_symbolic,style)
+%
+% Display RBA optimality problem (symbolic)
+%
+% 'rba_problem_numeric' is output of matlab function 'rba_model_to_linear_problem_symbolic'
+% 'style' = ( 'matrices' | 'equations' )
+  
 eval(default('style','''equations'''))
   
 switch style,
@@ -7,29 +14,29 @@ switch style,
 
 % display [A,a] as matrix
 display('Matrix [A|a]')
-[ {''}, LP_symbolic.variable_types', {''}; LP_symbolic.constraint_type_a, LP_symbolic.A, LP_symbolic.a]
+[ {''}, rba_problem_symbolic.variable_types', {''}; rba_problem_symbolic.constraint_types_a, rba_problem_symbolic.A, rba_problem_symbolic.a]
 
 % display [B,b] as matrix
 
 display('Matrix [B|b]')
-[ {''}, LP_symbolic.variable_types', {''}; LP_symbolic.constraint_type_b, LP_symbolic.B, LP_symbolic.b]
+[ {''}, rba_problem_symbolic.variable_types', {''}; rba_problem_symbolic.constraint_types_b, rba_problem_symbolic.B, rba_problem_symbolic.b]
 
   case 'equations',
 
 display(sprintf('Equalities\n'));
 
-for it = 1:length(LP_symbolic.a)
-  display(LP_symbolic.constraint_type_a{it})
-  ind = find(cellfun('length',LP_symbolic.A(it,:)));
-  display(mytable([LP_symbolic.A(it,ind)', repmat({'*'},length(ind),1), LP_symbolic.variable_types(ind)],0))
+for it = 1:length(rba_problem_symbolic.a)
+  display(rba_problem_symbolic.constraint_types_a{it})
+  ind = find(cellfun('length',rba_problem_symbolic.A(it,:)));
+  display(mytable([rba_problem_symbolic.A(it,ind)', repmat({'*'},length(ind),1), rba_problem_symbolic.variable_types(ind)],0))
 end
 
 display(sprintf('Inequalities\n'));
 
-for it = 1:length(LP_symbolic.b)
-  display(LP_symbolic.constraint_type_b{it})
-  ind = find(cellfun('length',LP_symbolic.B(it,:)));
-  display(mytable([LP_symbolic.B(it,ind)', repmat({'*'},length(ind),1), LP_symbolic.variable_types(ind)],0))
+for it = 1:length(rba_problem_symbolic.b)
+  display(rba_problem_symbolic.constraint_types_b{it})
+  ind = find(cellfun('length',rba_problem_symbolic.B(it,:)));
+  display(mytable([rba_problem_symbolic.B(it,ind)', repmat({'*'},length(ind),1), rba_problem_symbolic.variable_types(ind)],0))
 end
 
 end

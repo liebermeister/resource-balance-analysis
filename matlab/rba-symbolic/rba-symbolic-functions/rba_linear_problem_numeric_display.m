@@ -1,10 +1,15 @@
-function rba_linear_problem_numeric_display(LP_numeric)
+function rba_linear_problem_numeric_display(rba_problem_numeric)
+
+% rba_linear_problem_numeric_display(rba_problem_numeric)
+%
+% Display RBA optimality problem (numeric)
+% 'rba_problem_numeric' is output of matlab function 'rba_problem_symbolic_to_numeric'
 
 % display [A,a] as matrix
 display('Matrix [A|a]')
-[ {''}, LP_numeric.x_id', {'RHS'}; LP_numeric.a_eq_id, num2cell(LP_numeric.A_eq), num2cell(LP_numeric.a_eq)]
+[ {''}, rba_problem_numeric.x_id', {'RHS'}; rba_problem_numeric.a_eq_id, num2cell(rba_problem_numeric.A_eq), num2cell(rba_problem_numeric.a_eq)]
 
 % display [B,b] as matrix
 
 display('Matrix [B|b]')
-[ {''}, LP_numeric.x_id', {'RHS'}; LP_numeric.b_in_id, num2cell(LP_numeric.B_in), num2cell(LP_numeric.b_in)]
+[ {''}, rba_problem_numeric.x_id', {'RHS'}; rba_problem_numeric.b_in_id, num2cell(rba_problem_numeric.B_in), num2cell(rba_problem_numeric.b_in)]

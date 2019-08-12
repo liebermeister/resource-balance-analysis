@@ -1,0 +1,88 @@
+!!!SBtab	DocumentType='rba-model-schematic'						
+							
+% --- Entities ---							
+							
+!!SBtab	TableID='EntityType'	TableType='EntityType'	!Description='Biological entities'
+!ID	!Name	!MathSymbol	!IDSymbol	!Description
+Compartment	Cell compartment	kappa	Cpt				
+Metabolite	Metabolite	iota	Met					
+Reaction	Metabolic reaction	lambda	Rea				
+Enzyme	Enzyme	epsilon	Enz				
+Protein	Protein	pi	Prt				
+MolecularProcess	Molecular process	theta	Prc				
+MolecularMachine	Molecular machine	rho	Mch				
+PhysiologicalTarget	Physiological target	tau	Trg
+
+% --- Elements: tuples of entities, used as indices for variable vectors ---							
+% Note: snake case, to distinguish SBtab IDs from entity IDs							
+							
+!!SBtab	TableID='ElementType'	TableType='ElementType'	!Description='Tuples of biological entities, used as indices for biological variables'					
+!ID	!Name	!MathSymbol	!IDsymbol	!Definition	!Description				
+compartment	Cell compartment	k	cpt	{"is_a":"Compartment"}				
+localized_metabolite	Localized_metabolite	i	met	{"is_a":"Metabolite", "localized_in": "Compartment"}				
+localized_enzymatic_reaction	Localized enzymatic reaction	l	rea	{"is_a":"Reaction", "catalyzed_by":"Enzyme", "localized_in": "Compartment"}				
+localized_enzyme	Localized enzyme	j	enz	{"is_a":"Reaction", "catalyzed_by":"Enzyme", "localized_in": "Compartment"}				
+localized_protein	Localized protein	p	prt	{"is_a":"Protein", "localized_in": "Compartment"}				
+localized_molecular_process	Localized macromolecular process	q	prc	{"is_a":"MolecularProcess", "localized_in": "Compartment"}				
+localized_molecular_machine	Localized macromolecular machine	r	mch	{"is_a":"MolecularMachine", "localized_in": "Compartment"}				
+physiological_target	Physiological target	t	tgt	{"is_a":"PhysiologicalTarget"}				
+							
+% --- State variables, expressed as value * unit, indexed by elements ---							
+% == TO DO: Add SBO names							
+% == note: there is still no distinction between volume compartments and are compartments							
+% oder is es doch praktischer, membranen durch volumina zu beschreiben?							
+% note protein rate also includes protein degradation							
+% note that "effective rate" included dilution"							
+							
+!!SBtab	TableID ='VariableType'	TableType ='QuantityType'					
+!ID	!Name	!MathSymbol	!IDsymbol	!Unit	!indexed_by	!nonnegative	!is_given_by	!Description
+compartment_volume	Compartment volume	o^cpt	ocpt	um^3	compartment	True		
+metabolite_rate	Metabolite effective rate	r^met	rmet	mM/s	localized_metabolite	True	{"reaction_flux":"+ N_reaction_stoichiometry","process_flux":"+ N_metabolite_process_stoichiometry"}
+reaction_flux	Reaction flux	v^met	vmet	mM/s	localized_enzymatic_reaction	False	
+reaction_flux_max_fw	Maximal forward flux	v^max+	vmxf	mM/s	localized_enzymatic_reaction	True	{"enzyme_concentration":"+ E_enzyme_capacity_fw"}
+reaction_flux_max_rv	Maximal reverse flux	v^max-	vmxr	mM/s	localized_enzymatic_reaction	True	{"enzyme_concentration":"+ E_enzyme_capacity_rv"}
+enzyme_concentration	Enzyme concentration	c^enz	cenz	mM	localized_enzyme	True	
+process_flux	Process flux	v^prc	vprc	mM/s	localized_molecular_process	True	
+process_flux_max	Maximal process flux	v^max,prc	vmxp	mM/s	localized_molecular_process	True	{"machine_concentration":"+ E_machine_capacity"}
+machine_concentration	Machine concentration	c^mch	cmch	mM	localized_molecular_machine	True	
+compartment_packing	Compartment packing	d^cpt	dcpt	um^3	compartment	True	{"machine_concentration":"+ D_machine_volume","enzyme_concentration":"+ D_enzyme_volume"}
+compartment_packing_max	Maximal compartment packing	d^max	dcpm	um^3	compartment	True	{"compartment_volume":"+ Q_compartment_crowding"}
+target_value	Target quantity	t^tgt	ttgt	*	physiological_target	True	{"process_flux":"+ L_target_process_flux"}
+
+% --- Parameter vectors (and scalars), expressed as value * unit, indexed by elements ---							
+
+!!SBtab	TableID ='ParameterType'	TableType ='QuantityType'					
+!ID	!Name	!MathSymbol	!IDsymbol	!Unit	!indexed_by	!nonnegative	!Description		
+growth_rate	Cell growth rate	mu	mu	1/s		True		
+enzyme_kapp_fw	Enzyme apparent kcat forward	k_app^+	kapf	1/s	localized_enzyme	True			
+enzyme_kapp_rv	Enzyme apparent kcat reverse	k_app^-	kapr	1/s	localized_enzyme	True			
+machine_kapp	Machine apparent kcat	k_app^prc	kapm	1/s	localized_molecular_machine	True			
+enzyme_volume	Enzyme volumes	d^enz	denz	1/amol	localized_enzyme	True	Occupied compartment volume per enzyme concentration unit = um^3/mM 
+machine_volume	Machine volumes	d^mch	dmch	1/amol	localized_molecular_machine	True	Occupied compartment volume per machine concentration unit = um^3/mM
+compartment_crowding_limit	Limit on compartment crowding	q^cpt	qcrl	1	compartment	True	Limit on occupied volume per compartment volume		
+target_bound	Bound for physiological target	b^tgt	btgt	*	physiological_target	True	Lower bound, upper bound, or fixed value for physiological target
+
+% --- Connection matrices, relating between different quantities ---							
+							
+!!SBtab	TableID='Connection'	TableType='Relation'					
+!ID	!Name	!MathSymbol	!Unit	!From	!To	!is_diagonal_matrix_of	!Description
+N_reaction_stoichiometry	Metabolite/reaction stoichiometry	N^met_rea	1	reaction_flux	metabolite_rate		
+N_metabolite_process_stoichiometry	Metabolite/process stoichiometry	N^met_prc	1	process_flux	metabolite_rate		
+E_enzyme_capacity_fw	Reaction capacity forward	E^enz+	1/s	reaction_flux_max_fw	enzyme_concentration	enzyme_apparent_kcat_fw	
+E_enzyme_capacity_rv	Reaction capacity reverse	E^enz-	1/s	reaction_flux_max_rv	enzyme_concentration	enzyme_apparent_kcat_rv	
+E_machine_capacity	Machine capacity	E^mch	1/s	process_flux	machine_concentration	machine_apparent_kcat
+D_enzyme_volume	Enzyme volumes	D^enz	1/amol	enzyme_concentration	compartment_packing	enzyme_volume	unit = um^3/mM
+D_machine_volume	Machine volumes	D^mch	1/amol	machine_concentration	compartment_packing	machine_volume	unit = um^3/mM
+L_target_process_flux	Target/process flux link matrix	L^tgt_prc	*	process_flux	target_value		Target/process flux link matrix
+Q_compartment_crowding	Compartment crowding	Q^cpt	1	compartment_volume	compartment_packing_max	compartment_crowding_limit		
+
+% --- Mathematical statements constituting a cellular resource balance problem ---							
+% note that positivity constraints, lower and upper bound constraints, and dependence constraint are added automatically							
+							
+!!SBtab	TableID ='ModelConstraint'	TableType ='ModelConstraint'					
+!ID	!Name	!Variable	!StatementType	!RightHandSideSign	!RightHandSide	!Description
+met_mass_balance	Metabolite mass balance	metabolite_rate	is_equal_to_zero
+enz_capacity_fw	Enzyme capacity fw	reaction_flux	is_lower_than_variable	+	reaction_flux_max_fw
+enz_capacity_rv	Enzyme capacity rv	reaction_flux	is_higher_than_variable	-	reaction_flux_max_rv
+machine_capacity	Machine capacity	process_flux	is_lower_than_variable	+	process_flux_max
+compartment_crowding	Compartment crowding	compartment_packing	is_lower_than_variable	+	compartment_packing_max

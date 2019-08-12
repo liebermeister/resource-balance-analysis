@@ -1,9 +1,13 @@
-function [rba_model, rba_model_components] = rba_model_construct(rba_model_scheme, rba_model_components)
+function [rba_model, rba_model_components] = rba_make_model(rba_model_scheme, rba_model_components)
 
-% rba_model = rba_model_construct(rba_model_scheme, rba_model_components)
+% rba_model = rba_make_model(rba_model_scheme, rba_model_components)
 % 
-% build "rba-model" object from an "rba-model-scheme" and on element numbers and matrices for a cell model
-% while completing missing information in 'rba_model_components'
+% build "rba-model" struct from "rba-model-schematic" and "rba-model-components" structs
+% "rba-model" struct contains some information in a more ordered way
+%
+% for data structure 'rba-model-symbolic', see 'help rba-symbolic'
+%
+% the 'rba_model_components' struct is completed for missing information, and an updated version is returned for further use in the workflow
   
 rba_model = struct;
 rba_model.TYPE        = 'rba-model-symbolic';
@@ -13,7 +17,7 @@ rba_model.statements  = [];
 
 variable_types  = rmfield(rba_model_scheme.VariableType,'TABLE_ATTRIBUTES');
 parameter_types = rmfield(rba_model_scheme.ParameterType,'TABLE_ATTRIBUTES');
-rba_problem     = rmfield(rba_model_scheme.ModelConstraints,'TABLE_ATTRIBUTES');
+rba_problem     = rmfield(rba_model_scheme.ModelConstraint,'TABLE_ATTRIBUTES');
 
 vt = fieldnames(variable_types);
 pt = fieldnames(parameter_types);
@@ -112,7 +116,7 @@ end
 % build field "statements"
 % -----------------------------------------------------------------
 
-% copy all existing statements from the model scheme table "ModelConstraints"
+% copy all existing statements from the model schema table "ModelConstraint"
 
 statements = rba_problem; 
 

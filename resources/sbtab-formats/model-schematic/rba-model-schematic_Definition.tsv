@@ -1,0 +1,69 @@
+!!SBtab TableID='def_table' TableType='Definition' TableName='Definition table for rba-model-scheme'	SBtabVersion='1.0' 
+!ComponentName	!ComponentType	!IsPartOf	!isShortname	!Format	!Description
+
+% --- Table type 'EntityType' ---
+
+EntityType	Table							
+ID	Column	EntityType	True	string	
+Name	Column	EntityType	False	string	
+MathSymbol	Column	EntityType	False	string	
+IDSymbol	Column	EntityType	False	string	
+Description	Column	EntityType	False	string
+
+% --- Table type 'ElementType' ---
+
+ElementType	Table
+ID	Column	ElementType	True	string
+Name	Column	ElementType	False	string
+MathSymbol	Column	ElementType	False	string
+Definition	Column	ElementType	False	string
+Description	Column	ElementType	False	string
+
+% --- Table type 'ParameterType' ---
+
+ParameterType	Table
+ID	Column	ParameterType	True	string
+Name	Column	ParameterType	False	string
+MathSymbol	Column	ParameterType	False	string
+IDSymbol	Column	ParameterType	False	string
+Unit	Column	ParameterType	False	string
+indexed_by	Column	ParameterType	False	string
+nonnegative	Column	ParameterType	False	string
+Description	Column	ParameterType	False	string
+
+% --- Table type 'VariableType' ---
+
+VariableType	Table
+ID	Column	VariableType	True	string
+Name	Column	VariableType	False	string
+MathSymbol	Column	VariableType	False	string
+IDsymbol	Column	VariableType	False	string
+Unit	Column	VariableType	False	string
+indexed_by	Column	VariableType	False	string
+nonnegative	Column	VariableType	False	string
+determined_by	Column	VariableType	False	string
+Description	Column	VariableType	False	string
+
+% --- Table type 'Connection' ---
+
+Connection	Table
+ID	Column	Connection	True	string
+Name	Column	Connection	False	string
+MathSymbol	Column	Connection	False	string
+Unit	Column	Connection	False	string
+From	Column	Connection	False	string
+To	Column	Connection	False	string
+is_diagonal_matrix_of	Column	Connection	False	string
+Description	Column	Connection	False	string
+
+% --- Table type 'ModelConstraint' ---
+
+ModelConstraint	Table
+ID	Column	RBAproblem	True	string
+Name	Column	RBAproblem	False	string
+Variable	Column	RBAproblem	False	string
+StatementType	Column	RBAproblem	False	string
+RightHandSideSign	Column	RBAproblem	False	string
+RightHandSide	Column	RBAproblem	False	string
+Description	Column	RBAproblem	False	string
+
