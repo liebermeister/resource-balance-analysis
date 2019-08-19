@@ -10,14 +10,14 @@ epsilon = 10^-8;
   
 LP      = rba_problem_numeric;
 
-ind_opt = label_names(id_opt, LP.x_id);
+ind_opt = label_names(id_opt, LP.id_x);
 c       = zeros(size(LP.x_lb));
 c(ind_opt) = -1;
 
 warning('off','optim:linprog:WillRunDiffAlg')
 opt = optimset('Display','off');
 
-[x_opt, f_opt, exitflag, output, w_opt] = linprog(c, LP.B_in, LP.b_in, LP.A_eq, LP.a_eq, LP.x_lb, LP.x_ub,[],opt);
+[x_opt, f_opt, exitflag, output, w_opt] = linprog(c, LP.B, LP.b, LP.A, LP.a, LP.x_lb, LP.x_ub,[],opt);
 
 x_opt         = round_zero(x_opt,epsilon);
 w_opt.eqlin   = round_zero(w_opt.eqlin,epsilon);

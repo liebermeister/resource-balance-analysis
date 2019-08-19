@@ -13,26 +13,21 @@ function rba_problem_symbolic = rba_make_linear_problem_symbolic(rba_model, rba_
 % for symbolic representation of the LP problem
 % -----------------------------------------------------------------
 
-variable_types = fieldnames(rba_model.variables);
-nn             = length(variable_types);
-st             = fieldnames(rba_model.statements);
+names_x = fieldnames(rba_model.variables);
+nn      = length(names_x);
+st      = fieldnames(rba_model.statements);
 
-LP_symbolic.variable_types      = variable_types;
-LP_symbolic_variable_indices    = [];
+LP_symbolic.names_x             = names_x;
+LP_symbolic.names_a             = [];
+LP_symbolic.names_b             = [];
 LP_symbolic.x_lb                = repmat({'- Inf'},nn,1);
 LP_symbolic.x_ub                = repmat({'+ Inf'},nn,1);
 LP_symbolic.A{1,nn}             = [];
 LP_symbolic.B{1,nn}             = [];
 LP_symbolic.a                   = {};
 LP_symbolic.b                   = {};
-LP_symbolic.constraint_types_a   = [];
-LP_symbolic.constraint_types_b   = [];
-LP_symbolic.constraint_number_a = [];
-LP_symbolic.constraint_number_b = [];
-
-for it = 1:length(variable_types),
-  LP_symbolic_variable_indices{it} = rba_model.variables.(variable_types{it}).indices;
-end
+LP_symbolic.constrained_variable_a = [];
+LP_symbolic.constrained_variable_b = [];
 
 it_eq   = 0;
 it_ineq = 0;
@@ -66,7 +61,7 @@ for it = 1:length(st),
       %% replace "x = y" by "x = + I * y" 
       my_constraint_type = ['eq_' my_variable_type '_equal_to'];
       new_statement = struct;
-      new_statement.StatementType = 'is_given_by_formula';
+      new_statement.StatementType = 'given_by_formula';
       my_rhs_sign = my_statement.RightHandSideSign;
       switch my_rhs_sign,
         case '+', 
@@ -80,7 +75,7 @@ for it = 1:length(st),
       %% replace "x >= y" by "x >= + I * y" 
       my_constraint_type = ['ineq_' my_variable_type '_higher_than_' my_statement.RightHandSide];
       new_statement = struct;
-      new_statement.StatementType = 'is_given_by_formula';
+      new_statement.StatementType = 'given_by_formula';
       my_rhs_sign = my_statement.RightHandSideSign;
       switch my_rhs_sign,
         case '+', 
@@ -94,7 +89,7 @@ for it = 1:length(st),
       %% replace "x <= y" by "x <= + I * y" 
       my_constraint_type = ['ineq_' my_variable_type '_lower_than_' my_statement.RightHandSide];
       new_statement = struct;
-      new_statement.StatementType = 'is_given_by_formula';
+      new_statement.StatementType = 'given_by_formula';
       my_rhs_sign = my_statement.RightHandSideSign;
       switch my_rhs_sign,
         case '+', 
@@ -104,16 +99,16 @@ for it = 1:length(st),
       end
       new_statement.Operator = '<=';
       my_statement = new_statement;
-    case 'is_given_by',
+    case 'given_by',
       my_constraint_type = ['eq_' my_variable_type];% '_given_by'];
-      my_statement.StatementType = 'is_given_by_formula';
+      my_statement.StatementType = 'given_by_formula';
       my_statement.Operator = '==';
     otherwise,
       error(sprintf('unsupported statement type %s', my_statement_type));
   end
 
   switch my_statement.StatementType,
-    case 'is_given_by_formula',
+    case 'given_by_formula',
       % matrix M, vector m
       m       = [];
       M       = {};
@@ -131,8 +126,8 @@ for it = 1:length(st),
           it_eq = it_eq + 1;
           LP_symbolic.A(it_eq,:)                    = M;
           LP_symbolic.a{it_eq,1}                    = m;
-          LP_symbolic.constraint_types_a{it_eq,1}    = my_constraint_type;
-          LP_symbolic.constraint_number_a(it_eq,1)  = my_variable_number;
+          LP_symbolic.names_a{it_eq,1}              = my_constraint_type;
+          LP_symbolic.constrained_variable_a{it_eq,1} = my_variable_type;
         case {'<='},
           %% swap signs of M and m
           m = symbolic_switch_sign(m);
@@ -142,14 +137,14 @@ for it = 1:length(st),
           it_ineq = it_ineq + 1;
           LP_symbolic.B(it_ineq,:)                    = M;
           LP_symbolic.b{it_ineq,1}                    = m;
-          LP_symbolic.constraint_types_b{it_ineq,1}    = my_constraint_type;
-          LP_symbolic.constraint_number_b(it_ineq,1)  = my_variable_number;
+          LP_symbolic.names_b{it_ineq,1}    = my_constraint_type;
+          LP_symbolic.constrained_variable_b{it_ineq,1}  = my_variable_type;
         case {'>='},
           it_ineq = it_ineq + 1;
           LP_symbolic.B(it_ineq,:)                    = M;
           LP_symbolic.b{it_ineq,1}                    = m;
-          LP_symbolic.constraint_types_b{it_ineq,1}    = my_constraint_type;
-          LP_symbolic.constraint_number_b(it_ineq,1)  = my_variable_number;
+          LP_symbolic.names_b{it_ineq,1}    = my_constraint_type;
+          LP_symbolic.constrained_variable_b{it_ineq,1}  = my_variable_type;
       end
   end
   

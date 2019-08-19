@@ -1,25 +1,45 @@
-% 'rba_model_schematic'
-% ---------------------
+% ========================================
+% Data structures used in the RBA workflow
+% ========================================
+%
+% ------------------------------------
+% data structure 'rba-model-schematic'
+%  (describing the form of the rba model)
+%
+%  struct with fields
 %   .EntityType
 %   .ElementType
 %   .VariableType
 %   .ParameterType
 %   .Connection
 %   .ModelConstraint
-%  (each field represents a table from a model-schematic SBtab file)
 %
-% 'rba-model-components'
-% ----------------------
-%   .elements     struct with subfields
-%      .[ELEMENTNAME].IDsymbol   (with ELEMENTNAMEs as defined in rba-model-schematic)
-%   .variables    struct with subfields
+% In SBtab (Document type model-schematic), each field represents one table 
+% conversion to SBtab (files in directory /resources/model-schematic)
+%   o conversion from SBtab: sbtab_to_struct(rba_model_scheme_sbtab,'row')
+%   o conversion to SBtab:   struct_to_sbtab(rba_model_scheme)
+%
+% -------------------------------------
+% data structure 'rba-model-components'
+%  (describing the specific cell type)
+%
+%  struct with fields
+%   .elements : struct
+%      .[ELEMENTTYPE].IDsymbol   (with ELEMENTNAMEs as defined in rba-model-schematic)
+%   .variables : struct
 %      .[VARIABLETYPE].LowerBound
 %      .[VARIABLETYPE].UpperBound (with VARIABLETYPEs as defined in rba-model-schematic)
-%   .connections: struct with fieldnames [CONNECTIONS], as defined in rba-model-schematic; each field contains a matrix
+%   .connections : struct
+%      .[CONNECTIONS], as defined in rba-model-schematic; each field contains a matrix
 %
-% 'rba-model-symbolic'
-% -------------------------------------------------------
-%   (a data container for convenience)   
+%  In SBtab (Document type model-component), each subfield represents one table 
+%  currently defined by scripts (in subdirectory "example-functions")
+%
+% -----------------------------------
+% data structure 'rba-model-symbolic'
+%  (data container used within matlab for convenience)   
+%
+%  struct with fields
 %   .variables   : cell array with fields
 %      .[VARIABLETYPE].ids                  list of variable ids in model
 %      .[VARIABLETYPE].indices              list of variable indices in the final variable vector
@@ -33,32 +53,32 @@
 %      .[STATEMENTTYPE].StatementType       type of statement
 %      .[STATEMENTTYPE].RightHandSide       (only for some statement types): formula (symbolic) for right-hand side
 %
-% 'rba_problem_symbolic'
-% ----------------------
-%    (describing the symbolic RBA LP problem)
-%    .variable_types      n x 1: names of variable types
-%    .constraint_types_a  m x 1: cell array of equality constraint types
-%    .constraint_types_b  p x 1: cell array of iequality constraint types
-%    .x_lb                n x 1: cell array of lower bound symbols (eg '- Inf');
-%    .x_ub                n x 1: cell array of upper bound symbols (eg '+ Inf');
-%    .A{1,nn}             m x n: cell array of connection names (eg '+ Inf');
-%    .B{1,nn}             p x n: cell array of connection names (eg '+ Inf');
-%    .a                   m x 1: cell array of equality right hand sides
-%    .b                   m x 1: cell array of inequality right hand sides
-%   .. and additional fields for convenience:
-%    .variable_indices    n x 1: indices of variable types
-%    .constraint_number_a m x 1: vector of equality constraint numbers
-%    .constraint_number_b p x 1: vector of inequality constraint numbers
+% -------------------------------------
+% data structure 'rba-problem-symbolic'
+%  (describing the symbolic RBA LP problem)
+%
+%  struct with fields
+%    .names_x             nx x 1: names of variable types
+%    .names_a             na x 1: cell array of equality constraint types
+%    .names_b             nb x 1: cell array of iequality constraint types
+%    .x_lb                nx x 1: cell array of lower bound symbols (eg '- Inf');
+%    .x_ub                nx x 1: cell array of upper bound symbols (eg '+ Inf');
+%    .A                   na x nx: cell array of connection names (eg '+ Inf');
+%    .B                   nb x nx: cell array of connection names (eg '+ Inf');
+%    .a                   na x 1: cell array of equality right hand sides
+%    .b                   nb x 1: cell array of inequality right hand sides
 %    
-% 'rba_problem_numeric'
-% ---------------------
-%   (describing the numerical RBA LP problem)
-%   .x_id    cell struct, variable ids
-%   .a_eq_id cell struct, equality constraint ids
-%   .b_in_id cell struct, inequality constraint ids
-%   .x_lb    vector, lower bounds
-%   .x_ub    vector, upper bounds
-%   .A_eq    matrix in equality A x = a
-%   .a_eq    vector in equality A x = a
-%   .B_in    matrix in inequality B x = b
-%   .b_in    vector in inequality B x = b
+% ------------------------------------
+% data structure 'rba-problem-numeric'
+%  (describing the numerical RBA LP problem)
+%
+%  struct with fields
+%   .id_x  cell struct, variable ids
+%   .id_a  cell struct, equality constraint ids
+%   .id_b  cell struct, inequality constraint ids
+%   .x_lb  vector, lower bounds
+%   .x_ub  vector, upper bounds
+%   .A     matrix A in equality A x = a
+%   .a     vector a in equality A x = a
+%   .B     matrix B in inequality B x <= b
+%   .b     vector b in inequality B x <= b

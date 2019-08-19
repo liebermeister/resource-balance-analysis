@@ -135,7 +135,7 @@ end
 % add dependence statements for all variables supposed to be determined by others
 
 for it =1:length(vt),
-  my_dependency_string = variable_types.(vt{it}).is_given_by;
+  my_dependency_string = variable_types.(vt{it}).given_by;
   my_rule = [];
   if length(my_dependency_string),
     my_formula = jsondecode(my_dependency_string);
@@ -143,7 +143,7 @@ for it =1:length(vt),
     my_statement = [];
     my_statement.Name = [vt{it} ' dependence on other variables'];
     my_statement.Variable = vt{it};
-    my_statement.StatementType = 'is_given_by';
+    my_statement.StatementType = 'given_by';
     my_statement.RightHandSide = my_formula;
     if length(my_statement.RightHandSide),
       statements.(my_statement_ID) = my_statement;
