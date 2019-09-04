@@ -11,7 +11,8 @@ Enzyme	Enzyme	epsilon	Enz
 Protein	Protein	pi	Prt				
 MolecularProcess	Molecular process	theta	Prc				
 MolecularMachine	Molecular machine	rho	Mch				
-CellTarget	Cell target	tau	Trg
+TargetReaction	Target reaction	tau	Trg
+TargetMetabolite	Target metabolite	tau	Trg
 
 % --- Elements: tuples of entities, used as indices for variable vectors ---							
 % Note: snake case, to distinguish SBtab IDs from entity IDs							
@@ -25,7 +26,7 @@ enzyme_compartment	Localized enzyme	j	enz	{"is_a":"Reaction", "catalyzed_by":"En
 protein_compartment	Localized protein	p	prt	{"is_a":"Protein", "localized_in": "Compartment"}				
 process_compartment	Localized macromolecular process	q	prc	{"is_a":"MolecularProcess", "localized_in": "Compartment"}				
 machine_compartment	Localized macromolecular machine	r	mch	{"is_a":"MolecularMachine", "localized_in": "Compartment"}				
-target	Cell target	t	tgt	{"is_a":"CellTarget"}				
+target	Cell target	t	tgt	{"is_a":"Target"}				
 							
 % --- State variables, expressed as value * unit, indexed by elements ---							
 % == TO DO: Add SBO names							
@@ -36,7 +37,6 @@ target	Cell target	t	tgt	{"is_a":"CellTarget"}
 							
 !!SBtab	TableID ='VariableType'	TableType ='QuantityType'					
 !ID	!Name	!MathSymbol	!IDsymbol	!Unit	!indexed_by	!nonnegative	!given_by	!Description
-compartment_volume	Compartment volume	o^cpt	ocpt	um^3	compartment	True		
 metabolite_rate	Metabolite effective rate	r^met	rmet	mM/s	metabolite_compartment	True	{"reaction_flux":"+ N_reaction_stoichiometry","process_flux":"+ N_metabolite_process_stoichiometry"}
 reaction_flux	Reaction flux	v^met	vmet	mM/s	reaction_enzyme_compartment	False	
 reaction_flux_max_fw	Maximal forward flux	v^max+	vmxf	mM/s	reaction_enzyme_compartment	True	{"enzyme_concentration":"+ E_enzyme_capacity_fw"}

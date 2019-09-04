@@ -9,7 +9,8 @@
 % ----------------------------------------------------
 
 %rba_model_scheme_file  = [rba_basedir '/resources/model-schematic/rba-model-schematic.tsv'];
-rba_model_scheme_file  = [rba_basedir '/resources/model-schematic//scott_mass_balance_model-schematic.tsv'];
+%rba_model_scheme_file  = [rba_basedir '/resources/model-schematic/fischer_model-schematic.tsv'];
+rba_model_scheme_file  = [rba_basedir '/resources/model-schematic/minimal_model-schematic.tsv'];
 
 rba_model_scheme_sbtab = sbtab_document_load(rba_model_scheme_file);
 rba_model_scheme       = sbtab_to_struct(rba_model_scheme_sbtab,'row');
@@ -25,8 +26,12 @@ rba_model_scheme       = sbtab_to_struct(rba_model_scheme_sbtab,'row');
 % 2. Read cell information ("model components": IDs, bounds, connection matrices)
 % ----------------------------------------------------------------------------------
 
-%rba_model_components = rba_model_components_simple_example;
-rba_model_components = rba_model_components_scott_mass_balance;
+%rba_model_components = rba_model_components_rba_model;
+%rba_model_components = rba_model_components_fischer;
+rba_model_components = rba_model_components_minimal;
+
+% SHOW AS JSON STRING: rba_model_components_json = jsonencode(rba_model_components) 
+
 
 % check: convert to sbtab object (of document type "rba-model-elements")
 % sbtab_print(rba_model_components_to_sbtab(rba_model_components),'all')
@@ -42,16 +47,21 @@ rba_model_components = rba_model_components_scott_mass_balance;
 % 3. Generate rba-model structure and LP problem (symbolic form)
 % -------------------------------------------------------------
 
-[rba_model, rba_model_components] = rba_make_model(rba_model_scheme, rba_model_components);
+rba_model_indices = rba_make_model(rba_model_scheme, rba_model_components);
 
-rba_problem_symbolic = rba_make_linear_problem_symbolic(rba_model, rba_model_components);
+rba_problem_symbolic = rba_make_linear_problem_symbolic(rba_model_indices, rba_model_components);
 
 
 % -------------------------------------------------------------
 % 4. Generate LP optimality problem (numeric form)
 % -------------------------------------------------------------
 
-rba_problem_numeric = rba_make_linear_problem_numeric(rba_problem_symbolic, rba_model, rba_model_components);
+rba_problem_numeric = rba_make_linear_problem_numeric(rba_problem_symbolic, rba_model_indices, rba_model_components);
+
+% Oliver's compact format (similar to cobra format): 
+% rba_problem_compact = rba_problem_numeric_to_compact(rba_problem_numeric);
+
+% SHOW AS JSON STRING: rba_model_components_json = jsonencode(rba_problem_compact) 
 
 
 % -------------------------------------------------------------
@@ -59,7 +69,6 @@ rba_problem_numeric = rba_make_linear_problem_numeric(rba_problem_symbolic, rba_
 % -------------------------------------------------------------
 
 [x_opt, f_opt, w_opt] = rba_linear_problem_solve(rba_problem_numeric,'vmet_rea_1');
-
 
 % -------------------------------------------------------------
 % 6. Display LP optimality problem and results

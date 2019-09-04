@@ -1,8 +1,8 @@
-function rba_problem_symbolic = rba_make_linear_problem_symbolic(rba_model, rba_model_components)
+function rba_problem_symbolic = rba_make_linear_problem_symbolic(rba_model_indices, rba_model_components)
 
-% rba_problem_symbolic = rba_make_linear_problem_symbolic(rba_model, rba_model_components)
+% rba_problem_symbolic = rba_make_linear_problem_symbolic(rba_model_indices, rba_model_components)
 %
-% build 'rba_problem_symbolic' struct from rba_model and 'rba_model_components' structs
+% build 'rba_problem_symbolic' struct from rba_model_indices and 'rba_model_components' structs
 % 
 % for data structure 'rba_problem_symbolic', see 'help rba-symbolic'
 %
@@ -13,9 +13,9 @@ function rba_problem_symbolic = rba_make_linear_problem_symbolic(rba_model, rba_
 % for symbolic representation of the LP problem
 % -----------------------------------------------------------------
 
-names_x = fieldnames(rba_model.variables);
+names_x = fieldnames(rba_model_indices.variables);
 nn      = length(names_x);
-st      = fieldnames(rba_model.statements);
+st      = fieldnames(rba_model_indices.statements);
 
 LP_symbolic.names_x             = names_x;
 LP_symbolic.names_a             = [];
@@ -34,11 +34,11 @@ it_ineq = 0;
 
 for it = 1:length(st),
 
-  my_statement       = rba_model.statements.(st{it});
+  my_statement       = rba_model_indices.statements.(st{it});
   my_statement_type  = my_statement.StatementType;
   my_variable_type   = my_statement.Variable;
-  my_variable_number = length(rba_model.variables.(my_variable_type).ids);
-  it_variable_type   = rba_model.variables.(my_variable_type).variable_type_index;
+  my_variable_number = length(rba_model_indices.variables.(my_variable_type).ids);
+  it_variable_type   = rba_model_indices.variables.(my_variable_type).variable_type_index;
 
   % simple cases: constraints involving only zeros or constants parameters on the right hand side
   
@@ -118,7 +118,7 @@ for it = 1:length(st),
       for itt = 1:length(fnn),
         my_input_variable      = fnn{itt};
         my_connection_matrix   = my_statement.RightHandSide.(fnn{itt});
-        it_input_variable_type = rba_model.variables.(my_input_variable).variable_type_index;
+        it_input_variable_type = rba_model_indices.variables.(my_input_variable).variable_type_index;
         M{1,it_input_variable_type} = my_connection_matrix;
       end
       switch my_statement.Operator,

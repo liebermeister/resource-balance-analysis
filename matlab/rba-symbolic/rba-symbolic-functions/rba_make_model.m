@@ -1,19 +1,17 @@
-function [rba_model, rba_model_components] = rba_make_model(rba_model_scheme, rba_model_components)
+function rba_model_indices = rba_make_model(rba_model_scheme, rba_model_components)
 
-% rba_model = rba_make_model(rba_model_scheme, rba_model_components)
+% rba_model_indices = rba_make_model(rba_model_scheme, rba_model_components)
 % 
 % build "rba-model" struct from "rba-model-schematic" and "rba-model-components" structs
 % "rba-model" struct contains some information in a more ordered way
 %
 % for data structure 'rba-model-symbolic', see 'help rba-symbolic'
-%
-% the 'rba_model_components' struct is completed for missing information, and an updated version is returned for further use in the workflow
   
-rba_model = struct;
-rba_model.TYPE        = 'rba-model-symbolic';
-rba_model.variables   = [];
-rba_model.parameters  = [];
-rba_model.statements  = [];
+rba_model_indices = struct;
+rba_model_indices.TYPE        = 'rba-model-symbolic';
+rba_model_indices.variables   = [];
+rba_model_indices.parameters  = [];
+rba_model_indices.statements  = [];
 
 variable_types  = rmfield(rba_model_scheme.VariableType,'TABLE_ATTRIBUTES');
 parameter_types = rmfield(rba_model_scheme.ParameterType,'TABLE_ATTRIBUTES');
@@ -25,21 +23,29 @@ pt = fieldnames(parameter_types);
 
 % -----------------------------------------------------------------
 % build field "variables:
-% for each type of variable, put IDs and index number vectors into rba_model.variables
+% for each type of variable, put IDs and index number vectors into rba_model_indices.variables
 % -----------------------------------------------------------------
 
 z = 0;
+
 for it =1:length(vt),
   my_variable    = vt{it};
   my_element     = rba_model_scheme.VariableType.(my_variable).indexed_by;
+  if ~isfield(rba_model_components.elements,my_element),
+    error(sprintf('Information about element type %s missing in model components file', my_element));
+  end    
   my_element_ids = rba_model_components.elements.(my_element).IDsymbol;
-  if ~isfield(rba_model_components.variables,my_variable),
-    error(sprintf('Variable "%s" required by the model scheme is not declared in rba-model-components file',my_variable));
+  % Complete missing upper and lower bounds
+  if ~isfield(rba_model_components,'variables'),
+    rba_model_components.variables = struct;
   end
-  if ~isfield(rba_model_components.variables.(my_variable),'LowerBound'),
+  if ~isfield(rba_model_components.variables,my_variable),
+    rba_model_components.variables.(my_variable) = struct('LowerBound',[],'UpperBound',[]);
+  end
+  if isempty(rba_model_components.variables.(my_variable).LowerBound)
     rba_model_components.variables.(my_variable).LowerBound = -inf * ones(size(my_element_ids));
   end
-  if ~isfield(rba_model_components.variables.(my_variable),'UpperBound'),
+  if isempty(rba_model_components.variables.(my_variable).UpperBound)
     rba_model_components.variables.(my_variable).UpperBound = inf * ones(size(my_element_ids));
   end
   if length(rba_model_components.variables.(my_variable).LowerBound) ~= length(my_element_ids),
@@ -53,16 +59,18 @@ for it =1:length(vt),
   for itt = 1:length(my_element_ids)
     my_variable_ids{itt,1} = [ rba_model_scheme.VariableType.(my_variable).IDsymbol '_' my_element_ids{itt}];
   end
-  rba_model.variables.(vt{it}).ids = my_variable_ids;
-  rba_model.variables.(vt{it}).indices = z + [1:my_number]';
-  rba_model.variables.(vt{it}).variable_type_index = it;
+  rba_model_indices.variables.(vt{it}).ids = my_variable_ids;
+  rba_model_indices.variables.(vt{it}).indices = z + [1:my_number]';
+  rba_model_indices.variables.(vt{it}).variable_type_index = it;
+  rba_model_indices.variables.(vt{it}).LowerBound = rba_model_components.variables.(my_variable).LowerBound;
+  rba_model_indices.variables.(vt{it}).UpperBound = rba_model_components.variables.(my_variable).UpperBound;
   z = z + my_number;
 end
 
 
 % -----------------------------------------------------------------
 % build field "parameters:
-% for each type of parameter, put IDs and index number vectors into rba_model.variables
+% for each type of parameter, put IDs and index number vectors into rba_model_indices.variables
 % -----------------------------------------------------------------
 
 z = 0;
@@ -80,8 +88,8 @@ for it =1:length(pt),
     my_number      = 1;
     my_parameter_ids = {rba_model_scheme.ParameterType.(my_parameter).IDsymbol};
   end
-  rba_model.parameters.(pt{it}).ids = my_parameter_ids;
-  rba_model.parameters.(pt{it}).indices = z + [1:my_number]';
+  rba_model_indices.parameters.(pt{it}).ids = my_parameter_ids;
+  rba_model_indices.parameters.(pt{it}).indices = z + [1:my_number]';
   z = z + my_number;
 end
 
@@ -151,5 +159,5 @@ for it =1:length(vt),
   end
 end
 
-rba_model.statements = statements;
+rba_model_indices.statements = statements;
 

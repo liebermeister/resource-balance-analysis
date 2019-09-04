@@ -5,6 +5,8 @@ Wolfram Liebermeister (2019)
 
 Dependencies:
 
+  o Matlab utility functions    (https://github.com/liebermeister/matlab-utils)
+
   o Metabolic Network Toolbox  (https://github.com/liebermeister/metabolic-network-toolbox)
 
   o SBtab toolbox              (https://github.com/liebermeister/sbtab-matlab)

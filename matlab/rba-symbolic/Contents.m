@@ -24,9 +24,12 @@
 %  (describing the specific cell type)
 %
 %  struct with fields
+%   .entities : [OPTIONAL] struct
+%      .[ENTITYTYPE].Name        (with ELEMENTNAMEs as defined in rba-model-schematic)
+%      .[ENTITYTYPE].Annotation  (with ELEMENTNAMEs as defined in rba-model-schematic)
 %   .elements : struct
 %      .[ELEMENTTYPE].IDsymbol   (with ELEMENTNAMEs as defined in rba-model-schematic)
-%   .variables : struct
+%   .variables : [OPTIONAL] struct
 %      .[VARIABLETYPE].LowerBound
 %      .[VARIABLETYPE].UpperBound (with VARIABLETYPEs as defined in rba-model-schematic)
 %   .connections : struct
@@ -36,7 +39,7 @@
 %  currently defined by scripts (in subdirectory "example-functions")
 %
 % -----------------------------------
-% data structure 'rba-model-symbolic'
+% data structure 'rba-model-indices'
 %  (data container used within matlab for convenience)   
 %
 %  struct with fields
@@ -82,3 +85,17 @@
 %   .a     vector a in equality A x = a
 %   .B     matrix B in inequality B x <= b
 %   .b     vector b in inequality B x <= b
+%
+%
+% ------------------------------------
+% data structure 'rba-problem-compact' (Format used for data exchange with RBApy tool)
+%  (alternative format for numerical LP problems, equivalent to 'rba-problem-numeric')
+%
+%  struct with fields
+%   .row_names  cell struct, variable ids
+%   .col_names  cell struct, constraint ids
+%   .LB         vector, lower bounds
+%   .UB         vector, upper bounds
+%   .A          matrix A in constraints
+%   .b          vector b in constraints
+%   .row_signs  cell struct with entries "E" (equality) "L" (lower than) denoting the types of constraints
