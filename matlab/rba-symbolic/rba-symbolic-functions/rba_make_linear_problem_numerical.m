@@ -1,14 +1,17 @@
-function rba_problem_numeric = rba_make_linear_problem_numeric(rba_problem_symbolic, rba_model_indices, rba_model_components)
+function rba_problem_numerical = rba_make_linear_problem_numerical(rba_problem_symbolic, rba_model_indices, rba_model_components)
 
-% rba_problem_numeric = rba_make_linear_problem_numeric(rba_problem_symbolic, rba_model_indices, rba_model_components)
+% rba_problem_numerical = rba_make_linear_problem_numerical(rba_problem_symbolic, rba_model_indices, rba_model_components)
 %
-% translate 'rba_problem_symbolic' into 'rba_problem_numeric' struct, using information from 'rba_model_indices', and 'rba_model_components' structs
+% translate 'rba_problem_symbolic' into 'rba_problem_numerical' struct, using information from 'rba_model_indices', and 'rba_model_components' structs
 % 
-% for data structure 'rba_problem_numeric', see 'help rba-symbolic'
+% Note the variable names A, a, B, b denoting constraints
+%  A x == a
+%  B x <= b
+%
+% for data structure 'rba_problem_numerical', see 'help rba-symbolic'
 %
 % the function uses connection matrices from 'rba_model_components'
 
-  
 LP_symbolic = rba_problem_symbolic;
 
 for it = 1:length(LP_symbolic.constrained_variable_a),
@@ -24,7 +27,7 @@ for it = 1:length(LP_symbolic.constrained_variable_b),
 end
 
 % -----------------------------------------------------------------
-% build field "linear_problem_numeric" 
+% build field "linear_problem_numerical" 
 % for numerical representation of the LP problem
 % -----------------------------------------------------------------
 
@@ -114,7 +117,7 @@ for it = 1:length(LP_symbolic.names_a),
         case 'I',
           my_block = my_sign * eye(my_x_n);
         otherwise, 
-          my_block = rba_model_components.connections.(my_matrix_string);
+          my_block = rba_model_components.Connection.(my_matrix_string);
       end
       my_A_row(:,my_x_indices) = my_block;
     end
@@ -128,7 +131,7 @@ end
 
 for it = 1:length(LP_symbolic.names_b),
   my_constraint_type   = LP_symbolic.names_b{it};
-  my_constraint_number =constraint_numbers_b(it);
+  my_constraint_number = constraint_numbers_b(it);
   my_id_b              = numbered_names(my_constraint_type,my_constraint_number,0);
   my_rhs_string        = LP_symbolic.b{it};
   if isempty(my_rhs_string),
@@ -168,7 +171,7 @@ for it = 1:length(LP_symbolic.names_b),
         case 'I', 
           my_block = my_sign * eye(my_x_n);
         otherwise, 
-          my_block = rba_model_components.connections.(my_matrix_string);
+          my_block = rba_model_components.Connection.(my_matrix_string);
       end
       my_B_row(:,my_x_indices) = my_block;
     end
@@ -179,14 +182,14 @@ for it = 1:length(LP_symbolic.names_b),
   B    = [B; my_B_row];
 end
 
-rba_problem_numeric = struct;
+rba_problem_numerical = struct;
 
-rba_problem_numeric.id_x = id_x;
-rba_problem_numeric.id_a = id_a; % numbered_names('a',length(a),0);
-rba_problem_numeric.id_b = id_b; % numbered_names('b',length(b),0);
-rba_problem_numeric.x_lb = x_lb;
-rba_problem_numeric.x_ub = x_ub;
-rba_problem_numeric.A    = sparse(A);
-rba_problem_numeric.a    = a;
-rba_problem_numeric.B    = sparse(B);
-rba_problem_numeric.b    = b;
+rba_problem_numerical.id_x = id_x;
+rba_problem_numerical.id_a = id_a; % numbered_names('a',length(a),0);
+rba_problem_numerical.id_b = id_b; % numbered_names('b',length(b),0);
+rba_problem_numerical.x_lb = x_lb;
+rba_problem_numerical.x_ub = x_ub;
+rba_problem_numerical.A    = sparse(A);
+rba_problem_numerical.a    = a;
+rba_problem_numerical.B    = sparse(B);
+rba_problem_numerical.b    = b;

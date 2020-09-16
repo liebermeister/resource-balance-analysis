@@ -1,4 +1,4 @@
-!!SBtab TableID='def_table' TableType='Definition' TableName='Definition table for rba-model-scheme'	SBtabVersion='1.0' 
+!!SBtab TableID='def_table' TableType='Definition' TableName='Definition table for rba-model-schema' SBtabVersion='1.0' 
 !ComponentName	!ComponentType	!IsPartOf	!isShortname	!Format	!Description
 
 % --- Table type 'EntityType' ---

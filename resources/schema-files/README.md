@@ -1,0 +1,1 @@
+The subdirectories contain SBtab schema files and descriptions about the different SBtab-formats used to describe symbolic RBA models

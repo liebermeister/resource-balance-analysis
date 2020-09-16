@@ -1,14 +1,14 @@
-function [x_opt, f_opt, w_opt] = rba_linear_problem_solve(rba_problem_numeric,id_opt)
+function [x_opt, f_opt, w_opt] = rba_linear_problem_solve(rba_problem_numerical,id_opt)
 
-% [x_opt, f_opt, w_opt] = rba_linear_problem_solve(rba_problem_numeric,id_opt)
+% [x_opt, f_opt, w_opt] = rba_linear_problem_solve(rba_problem_numerical,id_opt)
 %
 % Solve RBA linear optimality problem, maximising the state variable with identifier id_opt
 %
-% rba_problem_numeric: output of matlab function 'rba_problem_numeric'
+% rba_problem_numerical: output of matlab function 'rba_problem_numerical'
 
 epsilon = 10^-8;
   
-LP      = rba_problem_numeric;
+LP      = rba_problem_numerical;
 
 ind_opt = label_names(id_opt, LP.id_x);
 c       = zeros(size(LP.x_lb));

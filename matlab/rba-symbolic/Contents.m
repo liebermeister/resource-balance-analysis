@@ -3,8 +3,7 @@
 % ========================================
 %
 % ------------------------------------
-% data structure 'rba-model-schematic'
-%  (describing the form of the rba model)
+% Data structure 'rba-model-schema' (describing the form of the rba model)
 %
 %  struct with fields
 %   .EntityType
@@ -14,33 +13,31 @@
 %   .Connection
 %   .ModelConstraint
 %
-% In SBtab (Document type model-schematic), each field represents one table 
-% conversion to SBtab (files in directory /resources/model-schematic)
-%   o conversion from SBtab: sbtab_to_struct(rba_model_scheme_sbtab,'row')
-%   o conversion to SBtab:   struct_to_sbtab(rba_model_scheme)
+% In SBtab (SBtab format "model-schema"), each field represents one table 
+% Conversion to SBtab (files in directory /resources/model-schema)
+%   o conversion from SBtab: sbtab_to_struct(rba_model_schema_sbtab,'row')
+%   o conversion to SBtab:   struct_to_sbtab(rba_model_schema)
 %
 % -------------------------------------
-% data structure 'rba-model-components'
-%  (describing the specific cell type)
+% Data structure 'rba-model-components' (describing the specific cell type)
 %
 %  struct with fields
 %   .entities : [OPTIONAL] struct
-%      .[ENTITYTYPE].Name        (with ELEMENTNAMEs as defined in rba-model-schematic)
-%      .[ENTITYTYPE].Annotation  (with ELEMENTNAMEs as defined in rba-model-schematic)
+%      .[ENTITYTYPE].Name        (with ELEMENTNAMEs as defined in rba-model-schema)
+%      .[ENTITYTYPE].Annotation  (with ELEMENTNAMEs as defined in rba-model-schema)
 %   .elements : struct
-%      .[ELEMENTTYPE].IDsymbol   (with ELEMENTNAMEs as defined in rba-model-schematic)
+%      .[ELEMENTTYPE].IDsymbol   (with ELEMENTNAMEs as defined in rba-model-schema)
 %   .variables : [OPTIONAL] struct
 %      .[VARIABLETYPE].LowerBound
-%      .[VARIABLETYPE].UpperBound (with VARIABLETYPEs as defined in rba-model-schematic)
+%      .[VARIABLETYPE].UpperBound (with VARIABLETYPEs as defined in rba-model-schema)
 %   .connections : struct
-%      .[CONNECTIONS], as defined in rba-model-schematic; each field contains a matrix
+%      .[CONNECTIONS], as defined in rba-model-schema; each field contains a matrix
 %
 %  In SBtab (Document type model-component), each subfield represents one table 
 %  currently defined by scripts (in subdirectory "example-functions")
 %
 % -----------------------------------
-% data structure 'rba-model-indices'
-%  (data container used within matlab for convenience)   
+% Data structure 'rba-model-indices' (data container used within matlab for convenience)   
 %
 %  struct with fields
 %   .variables   : cell array with fields
@@ -57,8 +54,7 @@
 %      .[STATEMENTTYPE].RightHandSide       (only for some statement types): formula (symbolic) for right-hand side
 %
 % -------------------------------------
-% data structure 'rba-problem-symbolic'
-%  (describing the symbolic RBA LP problem)
+% Data structure 'linear-problem-symbolic' (describing the symbolic RBA LP problem)
 %
 %  struct with fields
 %    .names_x             nx x 1: names of variable types
@@ -72,8 +68,7 @@
 %    .b                   nb x 1: cell array of inequality right hand sides
 %    
 % ------------------------------------
-% data structure 'rba-problem-numeric'
-%  (describing the numerical RBA LP problem)
+% Data structure 'linear-problem-numerical' (describing the numerical RBA LP problem)
 %
 %  struct with fields
 %   .id_x  cell struct, variable ids
@@ -88,8 +83,8 @@
 %
 %
 % ------------------------------------
-% data structure 'rba-problem-compact' (Format used for data exchange with RBApy tool)
-%  (alternative format for numerical LP problems, equivalent to 'rba-problem-numeric')
+% Data structure 'linear-problem-compact' (Format used for data exchange with RBApy tool)
+%  (alternative format for numerical LP problems, equivalent to 'rba-problem-numerical')
 %
 %  struct with fields
 %   .row_names  cell struct, variable ids

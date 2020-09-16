@@ -4,7 +4,7 @@ function rba_linear_problem_symbolic_display(rba_problem_symbolic,style)
 %
 % Display RBA optimality problem (symbolic)
 %
-% 'rba_problem_numeric' is output of matlab function 'rba_model_to_linear_problem_symbolic'
+% 'rba_problem_numerical' is output of matlab function 'rba_model_to_linear_problem_symbolic'
 % 'style' = ( 'matrices' | 'equations' )
   
 eval(default('style','''equations'''))

@@ -7,7 +7,11 @@ function rba_problem_symbolic = rba_make_linear_problem_symbolic(rba_model_indic
 % for data structure 'rba_problem_symbolic', see 'help rba-symbolic'
 %
 % uses bounds and connection matrices from 'rba_model_components'
-  
+%
+% Note the variable names A, a, B, b denoting constraints
+%  A x == a
+%  B x <= b
+%
 % -----------------------------------------------------------------
 % build field "linear_problem_symbolic" 
 % for symbolic representation of the LP problem

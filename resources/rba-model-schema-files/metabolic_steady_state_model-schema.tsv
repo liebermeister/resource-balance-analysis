@@ -1,0 +1,60 @@
+!!!SBtab DocumentType='model-schema'								
+% Schema for simple models without metabolite concentrations cell growth
+					
+% --- Entities ---								
+								
+!!SBtab TableID='EntityType' TableType='EntityType' Description='Biological entities'							
+!ID	!Name	!MathSymbol	!IDSymbol	!Description				
+Compartment	Cell compartment	kappa	Cpt	Cell compartment			
+Metabolite	Metabolite	iota	Met	Metabolite				
+Reaction	Metabolic reaction	lambda	Rea	Metabolic reaction		
+Enzyme	Enzyme	epsilon	Enz	Enzyme				
+								
+% --- Elements: tuples of entities, as indices for variable vectors ---
+
+!!SBtab TableID='ElementType' TableType='ElementType' Description='Tuples of biological entities, used as indices for biological variables'							
+!ID	!Name	!MathSymbol	!IDsymbol	!Definition	!Description			
+compartment	Cell compartment	k	cpt	{"is_a":"Compartment"}	Cell compartment			
+metabolite_compartment	Localized metabolite	i	met	{"is_a":"Metabolite", "localized_in": "Compartment"}	Localized metabolite	
+reaction_enzyme_compartment	Localized enzymatic reaction	l	rea	{"is_a":"Reaction", "catalyzed_by":"Enzyme", "localized_in": "Compartment"}	Localized enzymatic reaction	
+enzyme_compartment	Localized enzyme	j	enz	{"is_a":"Enzyme", "localized_in": "Compartment"}	Localized enzyme	
+								
+% --- State variables, expressed as value * unit, indexed by elements ---								
+								
+!!SBtab TableID='VariableType' TableType='VariableType'								
+!ID	!Name	!MathSymbol	!IDsymbol	!Unit	!indexed_by	!nonnegative	!given_by	!Description
+metabolite_rate	Metabolite effective rate	r^{met}	rmet	mM/s	metabolite_compartment	True	{"reaction_flux":"+ N_{rea}ction_stoichiometry"}	Metabolite effective rate
+reaction_flux	Reaction flux	v^{met}	vmet	mM/s	reaction_enzyme_compartment	False		Reaction flux
+enzyme_concentration	Enzyme concentration	c^{enz}	cenz	mM	enzyme_compartment	True		Enzyme concentration
+compartment_packing	Occupied volume	d^cpt	dcpt	um^3	compartment	True	{"enzyme_concentration":"+ D_enzyme_volume","enzyme_concentration":"+ D_enzyme_volume"}	Occupied volume
+compartment_packing_max	Limit on occupied volume	d^max	dcpm	um^3	compartment	True	{"compartment_volume":"+ Q_compartment_crowding"}	Limit on occupied volume
+								
+% --- Parameter vectors (and scalars), expressed as value * unit, indexed by elements ---								
+								
+!!SBtab TableID='ParameterType' TableType='ParameterType'								
+!ID	!Name	!MathSymbol	!IDsymbol	!Unit	!indexed_by	!nonnegative	!Description	
+growth_rate	Cell growth rate	mu	mu	1/s		True	Cell growth rate	
+enzyme_capacity_fw	Enzyme apparent kcat forward	k_app^+	kapf	1/s	enzyme_compartment	True	Enzyme apparent kcat forward	
+enzyme_capacity_bw	Enzyme apparent kcat reverse	k_app^-	kapr	1/s	enzyme_compartment	True	Enzyme apparent kcat reverse	
+machine_capacity	Machine apparent kcat	k_app^prc	kapm	1/s	machine_compartment	True	Machine apparent kcat	
+enzyme_volume	Enzyme volumes	d^{enz}	denz	1/amol	enzyme_compartment	True	Occupied compartment volume per enzyme concentration unit = um^3/mM 	
+compartment_volume_capacity	Compartment volume capacity	q^cpt	qcrl	1	compartment	True	Limit on occupied volume per compartment volume	
+target_lower_bound	Cell target lower bound 	b^tgt,min	btlb	?	target	True	Lower bound for physiological target	
+target_upper_bound	Cell target upper bound 	b^tgt,max	btub	?	target	True	Upper bound for physiological target	
+target_value	Cell target value 	b^tgt	btgt	?	target	True	Fixed value for physiological target								
+								
+% --- Connection matrices, relating between different quantities ---								
+								
+!!SBtab TableID='Connection' TableType='Connection'								
+!ID	!Name	!MathSymbol	!Unit	!From	!To	!is_diagonal_matrix_of	!Description	
+N_reaction_stoichiometry	Metabolic reaction stoichiometry	N^{met}_{rea}	1	reaction_flux	metabolite_rate		Metabolic reaction stoichiometry	
+E_enzyme_capacity	Reaction capacity forward	E^{enz}	1/s	enzyme_concentration	reaction_flux	enzyme_apparent_kcat_fw	Reaction capacity forward	
+D_enzyme_volume	Enzyme volumes	D^{enz}	1/amol	enzyme_concentration	compartment_packing	enzyme_volume	unit = um^3/mM Enzyme volumes	
+
+% --- Mathematical constraints for cellular resource balance problems ---								
+% note that positivity constraints, lower and upper bound constraints, and dependence constraint are added automatically								
+								
+!!SBtab TableID='ModelConstraint' TableType='ModelConstraint'						
+!ID	!Name	!Variable	!StatementType	!RightHandSideSign	!RightHandSide	!Description		
+met_mass_balance	Metabolite mass balance	metabolite_rate	is_equal_to_zero			Metabolite mass balance		
+compartment_crowding_constraint	Compartment crowding	compartment_packing	is_lower_than_variable	+	compartment_packing_max	Compartment crowding		
