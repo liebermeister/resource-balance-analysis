@@ -1,4 +1,4 @@
-!!!SBtab DocumentType='model-schema'								
+!!!SBtab SBtabVersion='1.2' DocumentType='model-schema'								
 % Schema for models with metabolite concentrations and cell growth
 					
 % --- Entities ---								
