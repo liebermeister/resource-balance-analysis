@@ -19,7 +19,7 @@
 %   R.Solution.StateVector:   [ns x 1 double]
 %   R.Solution.Objective:     double
 %
-% The problem can be directly solved by linear porgramming (eg using linprog or cplexlp)
+% The problem can be directly solved by linear porgramming (eg using linprog or lp_solve)
 %
 % (2) Data structure for RBA problems with parameterised matrices 
 %       (e.g. for a definable growth rate or another variable parameter)
