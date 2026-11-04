@@ -2,11 +2,10 @@ function rba_problem_symbolic = rba_make_linear_problem_symbolic(rba_model_indic
 
 % rba_problem_symbolic = rba_make_linear_problem_symbolic(rba_model_indices, rba_model_components)
 %
-% build 'rba_problem_symbolic' struct from rba_model_indices and 'rba_model_components' structs
+% build 'rba_problem_symbolic' struct from 'rba_model_indices' struct
+% (argument 'rba_model_components' is not used and only kept for compatibility)
 % 
 % for data structure 'rba_problem_symbolic', see 'help rba-symbolic'
-%
-% uses bounds and connection matrices from 'rba_model_components'
 %
 % Note the variable names A, a, B, b denoting constraints
 %  A x == a
@@ -36,7 +35,7 @@ LP_symbolic.constrained_variable_b = [];
 it_eq   = 0;
 it_ineq = 0;
 
-for it = 1:length(st),
+for it = 1:length(st)
 
   my_statement       = rba_model_indices.statements.(st{it});
   my_statement_type  = my_statement.StatementType;
@@ -46,7 +45,7 @@ for it = 1:length(st),
 
   % simple cases: constraints involving only zeros or constants parameters on the right hand side
   
-  switch my_statement_type,
+  switch my_statement_type
     case 'is_equal_to_zero', 
       LP_symbolic.x_lb{it_variable_type,1} = '0';
       LP_symbolic.x_ub{it_variable_type,1} = '0';
@@ -63,7 +62,7 @@ for it = 1:length(st),
       LP_symbolic.x_lb{it_variable_type,1} = my_statement.RightHandSide;
     case 'is_equal_to_variable',
       %% replace "x = y" by "x = + I * y" 
-      my_constraint_type = ['eq_' my_variable_type '_equal_to'];
+      my_constraint_type = ['eq_' my_variable_type '_equal_to_' my_statement.RightHandSide];
       new_statement = struct;
       new_statement.StatementType = 'given_by_formula';
       my_rhs_sign = my_statement.RightHandSideSign;
@@ -135,8 +134,8 @@ for it = 1:length(st),
         case {'<='},
           %% swap signs of M and m
           m = symbolic_switch_sign(m);
-          for it = 1:length(M)
-            M{it} = symbolic_switch_sign(M{it});
+          for it_M = 1:length(M)
+            M{it_M} = symbolic_switch_sign(M{it_M});
           end
           it_ineq = it_ineq + 1;
           LP_symbolic.B(it_ineq,:)                    = M;

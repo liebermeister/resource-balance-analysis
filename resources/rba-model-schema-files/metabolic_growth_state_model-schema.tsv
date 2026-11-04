@@ -4,7 +4,7 @@
 % --- Entities ---								
 								
 !!SBtab TableID='EntityType' TableType='EntityType' Description='Biological entities'							
-!ID	!Name	!MathSymbol	!IDSymbol	!Description				
+!ID	!Name	!MathSymbol	!IDsymbol	!Description				
 Cell	Cell	alpha	Cel	Cell				
 Compartment	Cell compartment	kappa	Cpt	Cell compartment				
 Metabolite	Metabolite	iota	Met	Metabolite				
@@ -39,7 +39,7 @@ target	Cell target	t	tgt	{"is_a":"Target"}	Cell target
 !!SBtab TableID='VariableType' TableType='VariableType'								
 !ID	!Name	!MathSymbol	!IDsymbol	!Unit	!indexed_by	!nonnegative	!given_by	!Description
 compartment_volume	Compartment volume	o^cpt	ocpt	um^3	compartment	True		Compartment volume
-metabolite_rate	Metabolite effective rate	r^{met}	rmet	mM/s	metabolite_compartment	True	{"reaction_flux":"+ N_{rea}ction_stoichiometry","process_flux":"+ N_metabolite_process_stoichiometry"}	Metabolite effective rate
+metabolite_rate	Metabolite effective rate	r^{met}	rmet	mM/s	metabolite_compartment	True	{"reaction_flux":"+ N_reaction_stoichiometry","process_flux":"+ N_metabolite_process_stoichiometry"}	Metabolite effective rate
 reaction_flux	Reaction flux	v^{met}	vmet	mM/s	reaction_enzyme_compartment	False		Reaction flux
 reaction_flux_max_fw	Maximal forward flux	v^max+	vmxf	mM/s	reaction_enzyme_compartment	True	{"enzyme_concentration":"+ E_enzyme_capacity_fw"}	Maximal forward flux
 reaction_flux_max_bw	Maximal reverse flux	v^max-	vmxr	mM/s	reaction_enzyme_compartment	True	{"enzyme_concentration":"+ E_enzyme_capacity_bw"}	Maximal reverse flux
@@ -72,15 +72,16 @@ target_value	Cell target value 	b^tgt	btgt	?	target	True	Fixed value for physiol
 								
 !!SBtab TableID='Connection' TableType='Connection'								
 !ID	!Name	!MathSymbol	!Unit	!From	!To	!is_diagonal_matrix_of	!Description	
-growth_rate_Iprt	Growth rate 	mu*I	1/s	protein_concentration	protein_growth_balance	mu	mu * identity matrix	
+growth_rate_Iprt	Protein dilution	mu*I	1/s	protein_concentration	protein_growth_balance	growth_rate	mu * identity matrix	
 N_reaction_stoichiometry	Metabolic reaction stoichiometry	N^{met}_{rea}	1	reaction_flux	metabolite_rate		Metabolic reaction stoichiometry	
+N_metabolite_process_stoichiometry	Metabolite/process stoichiometry	N^{met}_{prc}	1	process_flux	metabolite_rate		Metabolite/process stoichiometry	
 N_protein_process_stoichiometry	Protein production stoichiometry	N^{prt}_{prc}	1	process_flux	protein_growth_balance		Protein production stoichiometry	
 R_enzyme_composition	Enzyme protein composition	R^{prt}_{enz}	1	enzyme_concentration	protein_concentration		Enzyme protein composition	
 R_machine_composition	Machine protein composition	R^{prt}_{mch}	1	machine_concentration	protein_concentration		Machine protein composition	
-E_enzyme_capacity_fw	Reaction capacity forward	E^{enz}+	1/s	enzyme_concentration	reaction_flux_max_fw	enzyme_apparent_kcat_fw	Reaction capacity forward	
-E_enzyme_capacity_bw	Reaction capacity reverse	E^{enz}-	1/s	enzyme_concentration	reaction_flux_max_bw	enzyme_apparent_kcat_bw	Reaction capacity reverse	
-E_machine_capacity	Machine capacity	E^mch	1/s	machine_concentration	process_flux_max	machine_apparent_kcat	Machine capacity	
-D_enzyme_volume	Enzyme volumes	D^{enz}	1/amol	protein_concentration	compartment_packing	protein_volume	unit = um^3/mM Protein volumes	
+E_enzyme_capacity_fw	Reaction capacity forward	E^{enz}+	1/s	enzyme_concentration	reaction_flux_max_fw	enzyme_capacity_fw	Reaction capacity forward	
+E_enzyme_capacity_bw	Reaction capacity reverse	E^{enz}-	1/s	enzyme_concentration	reaction_flux_max_bw	enzyme_capacity_bw	Reaction capacity reverse	
+E_machine_capacity	Machine capacity	E^mch	1/s	machine_concentration	process_flux_max	machine_capacity	Machine capacity	
+D_enzyme_volume	Enzyme volumes	D^{enz}	1/amol	enzyme_concentration	compartment_packing	enzyme_volume	unit = um^3/mM Enzyme volumes	
 D_machine_volume	Machine volumes	D^mch	1/amol	machine_concentration	compartment_packing	machine_volume	unit = um^3/mM Machine volumes	
 Q_compartment_crowding	Compartment crowding	Q^cpt	1	compartment_volume	compartment_packing_max	compartment_volume_capacity	Compartment crowding	
 L_target_process_flux	Target/process flux link matrix	L^tgt_prc	?	process_flux	target_value		Target/process flux link matrix	

@@ -1,4 +1,17 @@
 % ========================================
+% Symbolic RBA model construction
+% ========================================
+%
+% Workflow (see 'rba_symbolic_example'; tests: 'rba_symbolic_test')
+%   rba_model_schema_check                 check a model schema for consistency
+%   rba_make_model_indices                 schema + model components -> rba-model-indices
+%   rba_make_linear_problem_symbolic       rba-model-indices -> linear-problem-symbolic
+%   rba_make_linear_problem_numerical      linear-problem-symbolic -> linear-problem-numerical
+%   rba_make_linear_problem_parameterised  growth-rate dependent problem (A_1 + mu * A_p) for 'rba'
+%   rba_linear_problem_solve               maximise one variable (LP)
+%   rba_model_schema_draw_*                graphics of a model schema
+%
+% ========================================
 % Data structures used in the RBA workflow
 % ========================================
 %
@@ -22,19 +35,23 @@
 % Data structure 'rba-model-components' (describing the specific cell type)
 %
 %  struct with fields
-%   .entities : [OPTIONAL] struct
+%   .Entity : [OPTIONAL] struct
 %      .[ENTITYTYPE].Name        (with ELEMENTNAMEs as defined in rba-model-schema)
 %      .[ENTITYTYPE].Annotation  (with ELEMENTNAMEs as defined in rba-model-schema)
-%   .elements : struct
+%   .Element : struct
 %      .[ELEMENTTYPE].IDsymbol   (with ELEMENTNAMEs as defined in rba-model-schema)
-%   .variables : [OPTIONAL] struct
+%   .Variable : [OPTIONAL] struct
 %      .[VARIABLETYPE].LowerBound
 %      .[VARIABLETYPE].UpperBound (with VARIABLETYPEs as defined in rba-model-schema)
-%   .connections : struct
-%      .[CONNECTIONS], as defined in rba-model-schema; each field contains a matrix
+%   .Parameter : [OPTIONAL] struct
+%      .[PARAMETERTYPE].Value     vector (or scalar) of parameter values
+%   .Connection : struct
+%      .[CONNECTION], as defined in rba-model-schema; each field contains a matrix
+%      (may be omitted for connections declared as 'is_diagonal_matrix_of' a parameter
+%       whose values are given; the matrix is then computed as diag(values))
 %
 %  In SBtab (Document type model-component), each subfield represents one table 
-%  currently defined by scripts (in subdirectory "example-functions")
+%  currently defined by matlab functions (in subdirectory "model-components")
 %
 % -----------------------------------
 % Data structure 'rba-model-indices' (data container used within matlab for convenience)   
@@ -43,10 +60,14 @@
 %   .variables   : cell array with fields
 %      .[VARIABLETYPE].ids                  list of variable ids in model
 %      .[VARIABLETYPE].indices              list of variable indices in the final variable vector
+%      .[VARIABLETYPE].element_ids          list of element ids
 %      .[VARIABLETYPE].variable_type_index  numbering index of variable type
+%      .[VARIABLETYPE].LowerBound, .UpperBound  bounds from model components
 %   .parameters   : cell array with fields
 %      .[PARAMETERTYPE].ids                 list of parameter ids in model
 %      .[PARAMETERTYPE].indices             list of parameter indices in the final parameter vector
+%      .[PARAMETERTYPE].values              parameter values (NaN if not given)
+%   .connections  : struct with all connection matrices used in the schema
 %   .statements   : cell array with fields
 %      .[STATEMENTTYPE].Name                statement name
 %      .[STATEMENTTYPE].Variable            name of variable type concerned (on left-hand side)
@@ -62,8 +83,9 @@
 %    .names_b             nb x 1: cell array of iequality constraint types
 %    .x_lb                nx x 1: cell array of lower bound symbols (eg '- Inf');
 %    .x_ub                nx x 1: cell array of upper bound symbols (eg '+ Inf');
-%    .A                   na x nx: cell array of connection names (eg '+ Inf');
-%    .B                   nb x nx: cell array of connection names (eg '+ Inf');
+%    .A                   na x nx: cell array of signed connection names (eg '+ N_reaction_stoichiometry', '- I')
+%    .B                   nb x nx: cell array of signed connection names
+%    .constrained_variable_a, .constrained_variable_b: variable type constrained by each constraint
 %    .a                   na x 1: cell array of equality right hand sides
 %    .b                   nb x 1: cell array of inequality right hand sides
 %    
@@ -87,8 +109,8 @@
 %  (alternative format for numerical LP problems, equivalent to 'rba-problem-numerical')
 %
 %  struct with fields
-%   .row_names  cell struct, variable ids
-%   .col_names  cell struct, constraint ids
+%   .col_names  cell struct, variable ids
+%   .row_names  cell struct, constraint ids
 %   .LB         vector, lower bounds
 %   .UB         vector, upper bounds
 %   .A          matrix A in constraints

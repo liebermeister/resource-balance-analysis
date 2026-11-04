@@ -1,32 +1,24 @@
---------------------------------------
-MATLAB code for Convex Model Balancing
+--------------------------------------------
+MATLAB code for Resource Balance Analysis (RBA)
+and symbolic RBA model construction
 
-Wolfram Liebermeister (2019)
--------------------------------------
+Wolfram Liebermeister (2019-2026)
+--------------------------------------------
 
 
 INSTALLATION
 
   1. Unpack the files
-  2. Include the subdirectory 'convex-model-balancing' into your Matlab path
-  3. Make sure that the following toolboxes are installed:
+  2. Include the subdirectory 'rba' (with all subdirectories) into your Matlab path
+  3. Make sure that the following toolboxes are installed and in your Matlab path:
+      o Matlab utility functions   (https://github.com/liebermeister/matlab-utils)
       o Metabolic Network Toolbox  (https://github.com/liebermeister/metabolic-network-toolbox)
       o SBtab toolbox              (https://github.com/liebermeister/sbtab-matlab)
-      o SBML Toolbox               (http://sbml.org/Software/SBMLToolbox)
+     and the Matlab Optimization Toolbox (function linprog)
+  4. Run the tests: rba_symbolic_test
 
 
-REQUIREMENTS
-
-  The functions were developed and tested with matlab6
-
-  They also require
-
-    Metabolic Network Toolbox - (https://github.com/liebermeister/metabolic-network-toolbox)
-    SBtab toolbox             - SBtab format (https://github.com/liebermeister/sbtab-matlab)
-    SBMLtoolbox               - SBML import / export  (see http://sbml.org/Software/SBMLToolbox)
-
-
-STATE OF THE SOFTWARE.
+STATE OF THE SOFTWARE
 
   The functions are under development and provided 'as is'.
   If you would like to contribute extensions to the toolbox, please let me know.
@@ -34,7 +26,9 @@ STATE OF THE SOFTWARE.
 
 DOCUMENTATION
 
-  Documentation (in directory 'doc') has been built automatically with M2HMTL
+  help rba-symbolic   (symbolic model construction and data structures)
+  help rba            (RBA solver and data structures)
+  Example script: rba_symbolic_example
 
 
 LICENSE
@@ -45,7 +39,7 @@ LICENSE
 
   The toolbox is distributed in the hope that it will be useful, but WITHOUT ANY 
   WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
-  PARTICULAR PURPOSE.  See the file COPYING for more details.
+  PARTICULAR PURPOSE.  See the file LICENSE for more details.
 
 
 ANY QUESTIONS?

@@ -1,19 +1,22 @@
 function [feasible, solution] = rba(rba_problem, options, p)
 
-% [solution, rba_problem] = rba(rba_problem,options)
+% [feasible, solution] = rba(rba_problem, options, p)
 %
 % Input:
 % rba_problem:  rba_problem data struct (one of the two possible forms, see "help rba")
 %               with ns state variables
 %
 % options.method           options: {'LP_problem', 'LP_problem_set_growth', 'screen_growth', 'maximise_growth'};
-% options.LP_weight_vector [ns x 1] numerical weights for LP problem
+% options.LP_weight_vector [ns x 1] numerical weights for LP problem (default: all ones)
 % options.LP_type          type of LP problem {'maximise', 'minimise'}
 % options.parameter        value of adjustable parameter (eg growth rate)
+%                            (rba_problem in format (2), e.g. from 'rba_make_linear_problem_parameterised')
 %                            o scalar; directly used in 'LP_problem_set_growth'
 %                            o scalar; used as initial value in 'maximise_growth'
 %                            o vector; used for 'screen_growth'
 % options.verbose          0; 
+% options.parameter_tolerance  relative tolerance for 'maximise_growth' (default 10^-9)
+% options.parameter_max_value  give up the search for the maximal parameter above this value (default 10^6)
 %
 % p: numerical parameter value, to override the setting "options.parameter"
 %  
@@ -37,13 +40,15 @@ options_default.verbose          = 0;
 options_default.LP_weight_vector = [];
 options_default.LP_type          = 'maximise'; % {'minimise'}
 options_default.parameter        = 1;   % DESCRIBE!
-options_default.parameter_min    = 0;   % DESCRIBE!
+options_default.parameter_min    = 0;   % 'maximise_growth': lowest parameter value (must be feasible)
 options_default.parameter_max    = 1;   % DESCRIBE!
 options_default.parameter_step   = 0.2; % DESCRIBE!
+options_default.parameter_tolerance = 10^-9;
+options_default.parameter_max_value = 10^6;
 options = join_struct(options_default,options);
 
 % if parameter p is provided, override the setting in options
-if p,
+if ~isempty(p)
   options.parameter = p;
 end
 
@@ -53,8 +58,6 @@ if length(options.parameter) > 1,
   end
   options.method = 'screen_growth';
 end
-
-opt = optimoptions('linprog','Display','none');
 
 feasible = 1;
 solution = struct;
@@ -77,10 +80,11 @@ switch options.method,
     lb  = rba_problem.Variables.LowerBounds;
     ub  = rba_problem.Variables.UpperBounds;
     n_s = length(rba_problem.Variables.Names);
-    z   = -ones(n_s,1);
-    if options.LP_weight_vector, z = options.LP_weight_vector;  end
+    z   = ones(n_s,1);
+    if ~isempty(options.LP_weight_vector), z = options.LP_weight_vector(:);  end
+    % linprog minimises z' * x; for maximisation, flip the sign
     if strcmp(options.LP_type,'maximise'), z = -z; end
-    [x,f,exitflag] = linprog(z,A,b,Aeq,beq,lb,ub,opt);
+    [x,f,exitflag] = rba_linprog(z,A,b,Aeq,beq,lb,ub);
     if exitflag~=1, 
       if options.verbose, warning('Optimisation unsuccessful'); end
       feasible=0;
@@ -94,6 +98,7 @@ switch options.method,
     p                 = options.parameter;
     my_options        = options; 
     my_options.method = 'LP_problem_set_growth';
+    solution          = cell(length(p),1);
     for it = 1:length(p),
       [feasible(it), solution{it}] = rba(rba_problem,my_options,p(it));
     end    
@@ -103,11 +108,11 @@ switch options.method,
 
     my_options        = options; 
     my_options.method = 'LP_problem_set_growth';
-    p_lo              = 0;
+    p_lo              = options.parameter_min;
     p_up              = options.parameter;
     
     if ~rba(rba_problem,my_options,p_lo),
-      error('Problem is infeasible at parameter value = 0');
+      error('Problem is infeasible at parameter value %g (options.parameter_min)', p_lo);
     end
     
     % setting the upper value = initial value;
@@ -115,12 +120,15 @@ switch options.method,
     feasible_up = rba(rba_problem,my_options,p_up);
     while feasible_up,
       p_up = 2 * p_up;
+      if p_up > options.parameter_max_value,
+        error('Problem is still feasible at parameter value %g; maximal parameter value not found', p_up);
+      end
       feasible_up = rba(rba_problem,my_options,p_up);
     end
 
     %% dichotomy search: 
     % from now on, p_lo is known to be feasible and p_up is known to be infeasible
-    while p_up > 1.000000001 * p_lo,
+    while p_up - p_lo > options.parameter_tolerance * max(p_up, 1),
       if options.verbose,
         [p_lo p_up]
       end

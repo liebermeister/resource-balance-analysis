@@ -1,10 +1,16 @@
 function rba_model_components = rba_model_components_1_reaction()
 
 % rba_model_components = rba_model_components_1_reaction()
+%
+% Minimal RBA model: one metabolite (produced by one enzymatic reaction), one macromolecular
+% process (consumes the metabolite and produces two proteins: an enzyme and a machine)
+% All parameters (kcat values, volumes, growth rate) are set to 1
+%
+% Matching model schemas: rba_steady_growth, metabolic_growth_state
 
 rba_model_components = struct;
 
-rba_model_components.DOCUMENT_ATTRIBUTES = struct('DocumentType', 'model-components', 'DocumentName', 'Model components: RBA model - 1 reaction');
+rba_model_components.DOCUMENT_ATTRIBUTES = struct('DocumentType', 'rba-model-components', 'DocumentName', 'Model components: RBA model - 1 reaction');
 
 rba_model_components.Entity.Compartment.Name      = numbered_names('cpt',1,0);
 rba_model_components.Entity.Metabolite.Name       = numbered_names('met',1,0);
@@ -56,8 +62,17 @@ rba_model_components.Variable.machine_concentration.UpperBound     = 1 * ones(1,
 rba_model_components.Variable.compartment_packing.UpperBound       = 1 * ones(1,1);
 rba_model_components.Variable.compartment_packing_max.UpperBound   = 1 * ones(1,1);
 
-rba_model_components.Connection.growth_rate_Imet                   = eye(1);
-rba_model_components.Connection.growth_rate_Iprt                   = eye(2);
+% Parameter values (connection matrices declared as 'is_diagonal_matrix_of' a parameter in the
+% schema, e.g. growth_rate_Imet = mu * I, are computed from these values if not given below)
+
+rba_model_components.Parameter.growth_rate.Value                   = 1;
+rba_model_components.Parameter.enzyme_capacity_fw.Value            = 1;
+rba_model_components.Parameter.enzyme_capacity_bw.Value            = 1;
+rba_model_components.Parameter.machine_capacity.Value              = 1;
+rba_model_components.Parameter.enzyme_volume.Value                 = 1;
+rba_model_components.Parameter.machine_volume.Value                = 1;
+rba_model_components.Parameter.compartment_volume_capacity.Value   = 1;
+
 rba_model_components.Connection.N_reaction_stoichiometry           = [1];
 rba_model_components.Connection.N_metabolite_process_stoichiometry = [-1];
 rba_model_components.Connection.N_protein_process_stoichiometry    = [1; 1];

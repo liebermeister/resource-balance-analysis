@@ -4,8 +4,7 @@ rba_simple_test_model;
 % -> defines RBA problem in data structure "rba_problem"
 [~,solution] = rba(rba_problem,struct('method', 'maximise_growth')); 
 solution.StateVector
-
-% works, but is very slow; ask oliver for smaller models?
+solution.Objective   % maximal growth rate (expected: 1)
 
 % file = '/home/wolfram/projekte/rba/matlab/rba-value-structure/data/MatricesOfRBA.mat';
 % rba_LP_problem = rba_linear_problem_from_matfile(file);

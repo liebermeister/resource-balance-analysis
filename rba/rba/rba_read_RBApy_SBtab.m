@@ -1,6 +1,10 @@
 % -------------------------
 % Example minimal CCM model
 % -------------------------
+%
+% UNFINISHED SCRIPT: reads an RBApy SBtab file (old format) and starts converting it into
+% an 'rba-model-components' struct (connection matrices are still missing; the file path
+% below refers to an old location)
 
 file = '/home/wolfram/projekte/rba/rba-framework/rba-html/example_minimal_CCM/minimal_CCM/RBA_model.tsv';
 
@@ -109,21 +113,21 @@ R.Variable.compartment_packing.LowerBound        = repmat(0,n.compartment,1);
 R.Variable.compartment_packing_max.LowerBound    = repmat(0,n.compartment,1);  
 
 %% !! SETTING All upper bounds to infinity - FIX THIS!
-R.Variable.compartment_volume.LowerBound         = repmat(inf,n.compartment,1);
-R.Variable.metabolite_rate.LowerBound            = repmat(inf,n.metabolite_compartment,1);
-R.Variable.metabolite_concentration.LowerBound   = repmat(inf,n.metabolite_compartment,1);
-R.Variable.metabolite_growth_balance.LowerBound  = repmat(inf,n.metabolite_compartment,1);
-R.Variable.reaction_flux.LowerBound              = repmat(inf,n.reaction_enzyme_compartment,1);
-R.Variable.reaction_flux_max_fw.LowerBound       = repmat(inf,n.reaction_enzyme_compartment,1);
-R.Variable.reaction_flux_max_bw.LowerBound       = repmat(inf,n.reaction_enzyme_compartment,1);
-R.Variable.enzyme_concentration.LowerBound       = repmat(inf,n.enzyme_compartment,1);
-R.Variable.protein_concentration.LowerBound      = repmat(inf,n.protein_compartment,1);
-R.Variable.protein_growth_balance.LowerBound     = repmat(inf,n.protein_compartment,1);
-R.Variable.process_flux.LowerBound               = repmat(inf,n.process_compartment,1);
-R.Variable.process_flux_max.LowerBound           = repmat(inf,n.process_compartment,1);
-R.Variable.machine_concentration.LowerBound      = repmat(inf,n.machine_compartment,1);
-R.Variable.compartment_packing.LowerBound        = repmat(inf,n.compartment,1);
-R.Variable.compartment_packing_max.LowerBound    = repmat(inf,n.compartment,1);  
+R.Variable.compartment_volume.UpperBound         = repmat(inf,n.compartment,1);
+R.Variable.metabolite_rate.UpperBound            = repmat(inf,n.metabolite_compartment,1);
+R.Variable.metabolite_concentration.UpperBound   = repmat(inf,n.metabolite_compartment,1);
+R.Variable.metabolite_growth_balance.UpperBound  = repmat(inf,n.metabolite_compartment,1);
+R.Variable.reaction_flux.UpperBound              = repmat(inf,n.reaction_enzyme_compartment,1);
+R.Variable.reaction_flux_max_fw.UpperBound       = repmat(inf,n.reaction_enzyme_compartment,1);
+R.Variable.reaction_flux_max_bw.UpperBound       = repmat(inf,n.reaction_enzyme_compartment,1);
+R.Variable.enzyme_concentration.UpperBound       = repmat(inf,n.enzyme_compartment,1);
+R.Variable.protein_concentration.UpperBound      = repmat(inf,n.protein_compartment,1);
+R.Variable.protein_growth_balance.UpperBound     = repmat(inf,n.protein_compartment,1);
+R.Variable.process_flux.UpperBound               = repmat(inf,n.process_compartment,1);
+R.Variable.process_flux_max.UpperBound           = repmat(inf,n.process_compartment,1);
+R.Variable.machine_concentration.UpperBound      = repmat(inf,n.machine_compartment,1);
+R.Variable.compartment_packing.UpperBound        = repmat(inf,n.compartment,1);
+R.Variable.compartment_packing_max.UpperBound    = repmat(inf,n.compartment,1);  
 
 reaction_formulae = strrep(D.Reaction.Formula,'''','');
 nn = network_build_from_sum_formulae_list(reaction_formulae);

@@ -1,4 +1,8 @@
-function lp_problem = lp_problem_numerical_to_lp_problem(lp_problem_numerical);
+function lp_problem = lp_problem_numerical_to_lp_problem(lp_problem_numerical)
+
+% lp_problem = lp_problem_numerical_to_lp_problem(lp_problem_numerical)
+%
+% Convert 'linear-problem-numerical' struct into 'rba_problem' struct (see 'help rba_problem')
 
 lp_problem.Variables.Names        = lp_problem_numerical.id_x;
 lp_problem.Variables.LowerBounds  = lp_problem_numerical.x_lb;

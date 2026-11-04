@@ -1,5 +1,11 @@
 function rba_model_components_sbtab = rba_model_components_to_sbtab(rba_model_components)
 
+% rba_model_components_sbtab = rba_model_components_to_sbtab(rba_model_components)
+%
+% Convert 'rba-model-components' struct into SBtab document (DocumentType 'rba-model-components')
+% Inverse function of 'sbtab_to_rba_model_components'
+% Note: parameter values (field 'Parameter') are not exported yet
+
 my_struct.DOCUMENT_ATTRIBUTES = struct('DocumentType','rba-model-components');
 
 entities = fieldnames(rba_model_components.Entity);

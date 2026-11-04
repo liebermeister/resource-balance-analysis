@@ -1,4 +1,9 @@
-function lp_problem_compact = lp_problem_numerical_to_compact(lp_problem_numerical)
+function lp_problem_compact = lp_problem_numerical_to_lp_problem_compact(lp_problem_numerical)
+
+% lp_problem_compact = lp_problem_numerical_to_lp_problem_compact(lp_problem_numerical)
+%
+% Convert 'linear-problem-numerical' struct into 'linear-problem-compact' struct
+% (all constraints in one matrix; row_signs 'E' for equalities, 'L' for 'lower than or equal')
   
 lp_problem_compact.col_names = lp_problem_numerical.id_x;
 lp_problem_compact.row_names = [lp_problem_numerical.id_a; lp_problem_numerical.id_b];

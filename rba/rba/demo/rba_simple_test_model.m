@@ -1,5 +1,11 @@
 % ------------------------------------------
 % simple test model
+%
+% Equality:    x1 = mu * x2
+% Inequality:  x1 <= k * x2,  x2 <= d
+% Bounds:      0 <= x1 <= 1,  0.5 <= x2 <= 1
+% (the lower bound on x2 excludes the trivial solution x = 0, which would be
+%  feasible for any growth rate mu); maximal growth rate: mu = k = 1
 
 k = 1;
 d = 1;
@@ -23,10 +29,10 @@ lambda_ref = 1;      % invented
 % conversion to matlab RBA dataformat
 
 rba_problem.Variables.Names          = {'x1','x2'};    
-rba_problem.Variables.LowerBounds    = [0 0]';    
+rba_problem.Variables.LowerBounds    = [0 0.5]';    
 rba_problem.Variables.UpperBounds    = [1 1]';
 rba_problem.Constraints.NamesEq      = {'eq1'};  
-rba_problem.Constraints.NamesIneq    = {'eq1','eq2'};  
+rba_problem.Constraints.NamesIneq    = {'ineq1','ineq2'};  
 rba_problem.Constraints.VectorEq     = a;     
 rba_problem.Constraints.VectorIneq   = b;   
 rba_problem.Constraints.MatrixEq_1   = A_1;   

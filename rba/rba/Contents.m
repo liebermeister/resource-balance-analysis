@@ -18,9 +18,9 @@
 %  lp_problem_numerical.B   
 %  lp_problem_numerical.b   
 %
-% Conversion functions:
-%  lp_problem_numerical_to_rba_problem.m
-%  rba_problem_to_lp_problem_numerical.m
+% Conversion functions (in rba-symbolic):
+%  lp_problem_numerical_to_lp_problem.m
+%  lp_problem_to_lp_problem_numerical.m
 %
 %
 % == Alternative format 'lp_problem_compact' (for simple LP problems, see rba-symbolic, )
@@ -33,10 +33,12 @@
 %  lp_problem_compact.b:         [nc x 1 double]
 %  lp_problem_compact.row_signs: {nc x 1 cell}
 %
-% Conversion function:
-%   rba_problem_numerical_to_lp_problem_compact
+% Conversion functions:
+%   lp_problem_numerical_to_lp_problem_compact (in rba-symbolic)
+%   lp_problem_compact_to_rba_problem
 %
 % RBA Functions
 % -------------
 %
-% RBA solver function "rba.m"
+% RBA solver function "rba.m" (LP problem, growth rate screen, growth rate maximisation)
+% LP solver wrapper "rba_linprog.m"
